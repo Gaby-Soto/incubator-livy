@@ -108,11 +108,11 @@ class SparkKubernetesAppSpec extends FunSpec with LivyBaseUnitTestSuite {
       val driver = when(mock[Pod].getStatus).thenReturn(status).getMock[Pod]
       val livyConf = new LivyConf(false)
       assertResult("status") {
-        KubernetesAppReport(Some(driver), Seq.empty, IndexedSeq.empty, None, livyConf)
+        KubernetesAppReport(Some(driver), Seq.empty, IndexedSeq.empty, livyConf)
           .getApplicationState
       }
       assertResult("unknown") {
-        KubernetesAppReport(None, Seq.empty, IndexedSeq.empty, None, livyConf).getApplicationState
+        KubernetesAppReport(None, Seq.empty, IndexedSeq.empty, livyConf).getApplicationState
       }
     }
   }
