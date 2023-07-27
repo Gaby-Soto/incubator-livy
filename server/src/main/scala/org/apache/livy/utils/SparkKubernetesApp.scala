@@ -30,7 +30,6 @@ import scala.util.{Failure, Success, Try}
 import scala.util.control.NonFatal
 
 import io.fabric8.kubernetes.api.model.{HasMetadata, OwnerReferenceBuilder, Pod, Service, ServiceBuilder}
-import io.fabric8.kubernetes.api.model.extensions.{Ingress, IngressBuilder}
 import io.fabric8.kubernetes.client._
 import org.apache.commons.lang.StringUtils
 
@@ -209,9 +208,6 @@ class SparkKubernetesApp private[utils](
           kubernetesDiagnostics = ArrayBuffer(e.getMessage)
           changeState(SparkApp.State.FAILED)
       } finally {
-        listener.foreach(_.infoChanged(AppInfo(sparkUiUrl = Option(buildHistoryServerUiUrl(
-          livyConf, Try(appPromise.future.value.get.get.getApplicationId).getOrElse("unknown")
-        )))))
         info(s"Finished monitoring application $appTag with state $state")
       }
     }
