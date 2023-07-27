@@ -63,7 +63,6 @@ object LivyConf {
   val SERVER_BASE_PATH = Entry("livy.ui.basePath", "")
 
   val UI_ENABLED = Entry("livy.ui.enabled", true)
-  val UI_HISTORY_SERVER_URL = Entry("livy.ui.history-server-url", "http://spark-history-server")
 
   val REQUEST_HEADER_SIZE = Entry("livy.server.request-header.size", 131072)
   val RESPONSE_HEADER_SIZE = Entry("livy.server.response-header.size", 131072)

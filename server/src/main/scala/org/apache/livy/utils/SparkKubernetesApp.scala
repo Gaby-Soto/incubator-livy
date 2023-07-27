@@ -134,10 +134,6 @@ object SparkKubernetesApp extends Logging {
     val SUCCEEDED = "succeeded"
     val FAILED = "failed"
   }
-
-  private def buildHistoryServerUiUrl(livyConf: LivyConf, appId: String): String = {
-    s"${livyConf.get(LivyConf.UI_HISTORY_SERVER_URL)}/history/$appId/jobs/"
-  }
 }
 
 class SparkKubernetesApp private[utils](
@@ -186,10 +182,7 @@ class SparkKubernetesApp private[utils](
           kubernetesDiagnostics = appReport.getApplicationDiagnostics
           changeState(mapKubernetesState(appReport.getApplicationState, appTag))
 
-          val latestAppInfo = AppInfo(
-            appReport.getDriverLogUrl,
-            appReport.getExecutorsLogUrls
-          )
+          val latestAppInfo = AppInfo(None, None)
           if (appInfo != latestAppInfo) {
             listener.foreach(_.infoChanged(latestAppInfo))
             appInfo = latestAppInfo
@@ -321,12 +314,12 @@ private[utils] case class KubernetesAppReport(
 
   import KubernetesConstants._
 
-  private val grafanaUrl = livyConf.get(LivyConf.KUBERNETES_GRAFANA_URL)
-  private val timeRange = livyConf.get(LivyConf.KUBERNETES_GRAFANA_TIME_RANGE)
-  private val lokiDatasource = livyConf.get(LivyConf.KUBERNETES_GRAFANA_LOKI_DATASOURCE)
-  private val sparkAppTagLogLabel = SPARK_APP_TAG_LABEL.replaceAll("-", "_")
-  private val sparkRoleLogLabel = SPARK_ROLE_LABEL.replaceAll("-", "_")
-  private val sparkExecIdLogLabel = SPARK_EXEC_ID_LABEL.replaceAll("-", "_")
+//  private val grafanaUrl = livyConf.get(LivyConf.KUBERNETES_GRAFANA_URL)
+//  private val timeRange = livyConf.get(LivyConf.KUBERNETES_GRAFANA_TIME_RANGE)
+//  private val lokiDatasource = livyConf.get(LivyConf.KUBERNETES_GRAFANA_LOKI_DATASOURCE)
+//  private val sparkAppTagLogLabel = SPARK_APP_TAG_LABEL.replaceAll("-", "_")
+//  private val sparkRoleLogLabel = SPARK_ROLE_LABEL.replaceAll("-", "_")
+//  private val sparkExecIdLogLabel = SPARK_EXEC_ID_LABEL.replaceAll("-", "_")
 
   def getApplicationState: String = {
     driver.map(_.getStatus.getPhase.toLowerCase).getOrElse("unknown")
@@ -334,43 +327,43 @@ private[utils] case class KubernetesAppReport(
 
   def getApplicationLog: IndexedSeq[String] = appLog
 
-  def getDriverLogUrl: Option[String] = {
-    if (livyConf.getBoolean(LivyConf.KUBERNETES_GRAFANA_LOKI_ENABLED)) {
-      val appTag = driver.map(_.getMetadata.getLabels.get(SPARK_APP_TAG_LABEL))
-      if (appTag.isDefined && appTag.get != null) {
-        return Some(
-          s"""$grafanaUrl/explore?left=""" + URLEncoder.encode(
-            s"""["now-$timeRange","now","$lokiDatasource",""" +
-              s"""{"expr":"{$sparkAppTagLogLabel=\\"${appTag.get}\\",""" +
-              s"""$sparkRoleLogLabel=\\"$SPARK_ROLE_DRIVER\\"}"},""" +
-              s"""{"ui":[true,true,true,"exact"]}]""", "UTF-8")
-        )
-      }
-    }
-    None
-  }
-
-  def getExecutorsLogUrls: Option[String] = {
-    if (livyConf.getBoolean(LivyConf.KUBERNETES_GRAFANA_LOKI_ENABLED)) {
-      val urls = executors.map(_.getMetadata.getLabels).flatMap(labels => {
-        val sparkAppTag = labels.get(SPARK_APP_TAG_LABEL)
-        val sparkExecId = labels.get(SPARK_EXEC_ID_LABEL)
-        if (sparkAppTag != null && sparkExecId != null) {
-          val sparkRole = labels.getOrDefault(SPARK_ROLE_LABEL, SPARK_ROLE_EXECUTOR)
-          Some(s"executor-$sparkExecId#$grafanaUrl/explore?left=" + URLEncoder.encode(
-            s"""["now-$timeRange","now","$lokiDatasource",""" +
-              s"""{"expr":"{$sparkAppTagLogLabel=\\"$sparkAppTag\\",""" +
-              s"""$sparkRoleLogLabel=\\"$sparkRole\\",""" +
-              s"""$sparkExecIdLogLabel=\\"$sparkExecId\\"}"},""" +
-              s"""{"ui":[true,true,true,"exact"]}]""", "UTF-8"))
-        } else {
-          None
-        }
-      })
-      if (urls.nonEmpty) return Some(urls.mkString(";"))
-    }
-    None
-  }
+//  def getDriverLogUrl: Option[String] = {
+//    if (livyConf.getBoolean(LivyConf.KUBERNETES_GRAFANA_LOKI_ENABLED)) {
+//      val appTag = driver.map(_.getMetadata.getLabels.get(SPARK_APP_TAG_LABEL))
+//      if (appTag.isDefined && appTag.get != null) {
+//        return Some(
+//          s"""$grafanaUrl/explore?left=""" + URLEncoder.encode(
+//            s"""["now-$timeRange","now","$lokiDatasource",""" +
+//              s"""{"expr":"{$sparkAppTagLogLabel=\\"${appTag.get}\\",""" +
+//              s"""$sparkRoleLogLabel=\\"$SPARK_ROLE_DRIVER\\"}"},""" +
+//              s"""{"ui":[true,true,true,"exact"]}]""", "UTF-8")
+//        )
+//      }
+//    }
+//    None
+//  }
+//
+//  def getExecutorsLogUrls: Option[String] = {
+//    if (livyConf.getBoolean(LivyConf.KUBERNETES_GRAFANA_LOKI_ENABLED)) {
+//      val urls = executors.map(_.getMetadata.getLabels).flatMap(labels => {
+//        val sparkAppTag = labels.get(SPARK_APP_TAG_LABEL)
+//        val sparkExecId = labels.get(SPARK_EXEC_ID_LABEL)
+//        if (sparkAppTag != null && sparkExecId != null) {
+//          val sparkRole = labels.getOrDefault(SPARK_ROLE_LABEL, SPARK_ROLE_EXECUTOR)
+//          Some(s"executor-$sparkExecId#$grafanaUrl/explore?left=" + URLEncoder.encode(
+//            s"""["now-$timeRange","now","$lokiDatasource",""" +
+//              s"""{"expr":"{$sparkAppTagLogLabel=\\"$sparkAppTag\\",""" +
+//              s"""$sparkRoleLogLabel=\\"$sparkRole\\",""" +
+//              s"""$sparkExecIdLogLabel=\\"$sparkExecId\\"}"},""" +
+//              s"""{"ui":[true,true,true,"exact"]}]""", "UTF-8"))
+//        } else {
+//          None
+//        }
+//      })
+//      if (urls.nonEmpty) return Some(urls.mkString(";"))
+//    }
+//    None
+//  }
 
   def getApplicationDiagnostics: IndexedSeq[String] = {
     (Seq(driver) ++ executors.sortBy(_.getMetadata.getName).map(Some(_)))
