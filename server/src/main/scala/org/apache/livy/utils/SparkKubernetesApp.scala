@@ -280,13 +280,11 @@ object KubernetesConstants {
   val SPARK_APP_ID_LABEL = "spark-app-selector"
   val SPARK_APP_TAG_LABEL = "spark-app-tag"
   val SPARK_ROLE_LABEL = "spark-role"
-  val SPARK_EXEC_ID_LABEL = "spark-exec-id"
-  val SPARK_UI_URL_LABEL = "spark-ui-url"
 
   val SPARK_ROLE_DRIVER = "driver"
   val SPARK_ROLE_EXECUTOR = "executor"
 
-  val CREATED_BY_LIVY_LABEL = Map("created-by" -> "livy")
+  val CREATED_BY_LIVY_LABEL = Map(CREATED_BY_ANNOTATION -> "livy")
 }
 
 class KubernetesApplication(driverPod: Pod) {
