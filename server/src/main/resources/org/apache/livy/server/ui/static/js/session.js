@@ -99,13 +99,13 @@ function appendSummary(session) {
   $("#session-summary").append(
     "<h3>Session " + session.id + "</h3>" +
     "<ul class='list-unstyled'>" +
-      sumWrap("Application Id", appIdLink(session)) +
+      sumWrap("Application Id", session.appId) +
       sumWrap("Name", session.name) +
       sumWrap("Owner", session.owner) +
       sumWrap("Proxy User", session.proxyUser) +
       sumWrap("Session Kind", session.kind) +
       sumWrap("State", session.state) +
-      sumWrapWithClass("Logs", logLinks(session, "session"), "with-scroll-bar") +
+      // sumWrapWithClass("Logs", logLinks(session, "session"), "with-scroll-bar") +
     "</ul>"
   );
 }

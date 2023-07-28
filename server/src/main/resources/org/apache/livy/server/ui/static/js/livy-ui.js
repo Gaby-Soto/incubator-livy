@@ -35,49 +35,8 @@ function escapeHtml(string) {
   });
 }
 
-function uiLink(relativePath, inner) {
-  return anchorLink(prependBasePath("/ui/") + relativePath, inner);
-}
-
 function anchorLink(link, inner) {
   return '<a href="' + link + '">' + inner + "</a>";
-}
-
-function driverLogLink(session) {
-  var driverLogUrl = session.appInfo.driverLogUrl;
-  if (driverLogUrl != null) {
-    return anchorLink(driverLogUrl, "driver");
-  } else {
-    return "";
-  }
-}
-
-function executorsLogLinks(session) {
-  var executorLogUrls = session.appInfo.executorLogUrls;
-  if (executorLogUrls != null) {
-    return executorLogUrls.split(";").map(function (pair) {
-      var nameAndLink = pair.split("#");
-      return divWrap(anchorLink(nameAndLink[1], nameAndLink[0]));
-    }).join("");
-  } else {
-    return "";
-  }
-}
-
-function logLinks(session, kind) {
-  var sessionLog = divWrap(uiLink(kind + "/" + session.id + "/log", "session"));
-  var driverLog =  divWrap(driverLogLink(session));
-  var executorsLogs = executorsLogLinks(session);
-  return sessionLog + driverLog + executorsLogs;
-}
-
-function appIdLink(session) {
-  var appUiUrl = session.appInfo.sparkUiUrl;
-  if (appUiUrl != null) {
-    return anchorLink(appUiUrl, session.appId);
-  } else {
-    return session.appId;
-  }
 }
 
 function tdWrap(val) {

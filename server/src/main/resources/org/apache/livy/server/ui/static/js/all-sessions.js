@@ -19,14 +19,13 @@ function loadSessionsTable(sessions) {
   $.each(sessions, function(index, session) {
     $("#interactive-sessions .sessions-table-body").append(
       "<tr>" +
-        tdWrap(uiLink("session/" + session.id, session.id)) +
-        tdWrap(appIdLink(session)) +
+        tdWrap(session.id) +
+        tdWrap(session.appId) +
         tdWrap(session.name) +
         tdWrap(session.owner) +
         tdWrap(session.proxyUser) +
         tdWrap(session.kind) +
         tdWrap(session.state) +
-        tdWrapWithClass(logLinks(session, "session"), "with-scroll-bar") +
         "</tr>"
     );
   });
@@ -37,12 +36,11 @@ function loadBatchesTable(sessions) {
     $("#batches .sessions-table-body").append(
       "<tr>" +
         tdWrap(session.id) +
-        tdWrap(appIdLink(session)) +
+        tdWrap(session.appId) +
         tdWrap(session.name) +
         tdWrap(session.owner) +
         tdWrap(session.proxyUser) +
         tdWrap(session.state) +
-        tdWrapWithClass(logLinks(session, "batch"), "with-scroll-bar") +
         "</tr>"
     );
   });
